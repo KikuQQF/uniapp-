@@ -32,17 +32,21 @@
 		</view>
 		<van-goods-action>
 		  <van-goods-action-icon icon="wap-home-o" text="首页" @click="Tohome()"/>
-		  <van-goods-action-icon icon="cart-o" text="购物车" info="5" />
-		  <van-goods-action-button color="#be99ff" text="加入购物车" type="warning" />
+		  <van-goods-action-icon icon="cart-o" text="购物车":info="cartinfo === 0 ? null: cartinfo" @click="ToCart()"/>
+		  <van-goods-action-button color="#be99ff" text="加入购物车" type="warning" @click="pushCart()"/>
 		  <van-goods-action-button color="#f87fa4" text="立即购买" />
 		</van-goods-action>
 	</view>
 </template>
 
 <script>
+	import {mapState,mapMutations,mapGetters} from'vuex'
+	
 	export default {
 		data() {
 			return {
+				//购物车小图标数量
+				cartinfo:0,
 				detail:{
 					title:"七夕限定|13支心动香槟|14支浪漫粉玫",
 					dec:"七夕限定款",
@@ -73,13 +77,46 @@
 				}
 			}
 		},
+		
+		computed:{
+			...mapState('cart',[]),
+			...mapGetters('cart',['totalCount'])
+		},
+		
+		watch:{
+			totalCount:{
+				handler(newval,oldval){
+					this.cartinfo=newval
+					},
+					//立即监听，进入页面就触发
+				immediate:true
+			}
+		},
+		
 		methods: {
-		Tohome(){
-			uni.switchTab({
-				url:'/pages/home/home',
-			})
-
-		}
+			...mapMutations('cart',['addToCart']),
+			
+			Tohome(){
+				uni.switchTab({
+					url:'/pages/home/home',
+				})
+			},
+			ToCart(){
+				uni.switchTab({
+					url:'/pages/cart/cart',
+				})
+			},
+			pushCart(){
+				const goods ={
+					id:1,
+					name:"花",
+					price:"520.00",
+					count:1,
+					state:true
+				}
+				
+				this.addToCart(goods)
+			}
 		}
 	}
 </script>
@@ -99,6 +136,8 @@
 	.price-card{
 		height:70px;
 		background-color: #FC5967;
+		border-radius: 20rpx;
+		border: dashed 1rpx #fff;
 		.van-col{
 			.price-card-top{
 				height: 70%;
@@ -119,6 +158,7 @@
 	.title-dec{
 		height:70px;
 		padding: 10px;
+		border-bottom: solid 1rpx #FC5967;
 		.title-dec-top{
 			font-size: 16px;
 			line-height:calc(150%);

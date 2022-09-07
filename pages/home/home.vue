@@ -34,7 +34,9 @@
 </template>
 
 <script>
+	import tabbarTips from '@/mixins/tabbar-tips.js'
 	export default {
+		mixins:[tabbarTips],
 		data() {
 			return {
 				swiperitemList:[{
